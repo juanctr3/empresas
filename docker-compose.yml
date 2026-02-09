@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_NAME=coticefacil-db
+      - DB_USER=cotice-user
+      - DB_PASSWORD=cotice_temp_123
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: coticefacil-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: coticefacil-db
+      MYSQL_USER: cotice-user
+      MYSQL_PASSWORD: cotice_temp_123
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db_data:
