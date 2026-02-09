@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: evolution_api
+    restart: always
+    ports:
+      - "8081:8080" # El CRM usará el puerto 8081
+    environment:
+      - SERVER_URL=http://tu-ip-o-dominio:8081
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=tu_token_maestro_super_secreto
+      - DATABASE_ENABLED=true
+      - DATABASE_CONNECTION_URI=postgresql://user:password@evolution_db:5432/evolution_db?schema=public
+      - DATABASE_PROD_URL=postgresql://user:password@evolution_db:5432/evolution_db?schema=public
+      - DATABASE_PROVIDER=postgresql
+      - STORE_MESSAGES=true
+      - STORE_MESSAGE_UP_UPSERT=true
+    depends_on:
+      - evolution_db
+
+  evolution_db:
+    image: postgres:15-alpine
+    container_name: evolution_db
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=evolution_db
+    volumes:
+      - evolution_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  evolution_postgres_data:
